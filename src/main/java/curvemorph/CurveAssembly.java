@@ -54,7 +54,9 @@ public class CurveAssembly
 				bUseCentroid = true;
 			final CurveLerp startI = CurveLerp.fromROI(curveRefs.get( nRoi ));
 			final CurveLerp endI = CurveLerp.fromROI(curveRefs.get( nRoi + 1 ));
+			
 			final int [] nOrient = getOrientation(startI, endI);
+
 			PolylineState start = new PolylineState(new CurveLerp( startI.resampleDouble( nFinalSegmentsN, nOrient[0] )));
 			PolylineState end   = new PolylineState(new CurveLerp(   endI.resampleDouble( nFinalSegmentsN, nOrient[1] )));
 			for(int nFrame = nIniSegmFrame + 1; nFrame < nLastSegmFrame; nFrame ++)
@@ -129,6 +131,17 @@ public class CurveAssembly
 	int [] getOrientation(final CurveLerp start, final CurveLerp end)
 	{
 		int [] nOrientation = new int [2];
+		
+		if(dial.nMorphType == 2)
+		{
+			return nOrientation;
+		}
+		if(dial.nMorphType == 3)
+		{
+			nOrientation[0]  =  1;
+			nOrientation[1]  =  1;
+			return nOrientation;
+		}
 		double dDistance = Double.MAX_VALUE;
 		double dCurrDistance;
 		int nStartLast = start.origXY[0].length-1;

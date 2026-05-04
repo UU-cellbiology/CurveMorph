@@ -19,7 +19,7 @@ import ij.process.FloatPolygon;
 public class CurveMorph implements PlugIn 
 {
 	/** current version **/
-	String sVersion = "0.0.1";
+	String sVersion = "0.0.2";
 	
 	/** current image, must be stack or timelapse **/
 	ImagePlus imp;

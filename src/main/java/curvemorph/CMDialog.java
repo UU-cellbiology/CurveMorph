@@ -14,7 +14,7 @@ public class CMDialog implements DialogListener
 	/**  0 - morphing; 1 - xy interpolation**/
 	public int nAlgorithm = (int)Prefs.get( "CurveMorph.nAlgorithm", 0 );
 	
-	/** in case of morph algorithm, 0 - centroid, 1 - closest end point**/
+	/** in case of morph algorithm, 0 - centroid, 1 - closest end point, 2 - start always first, 3 - end always first **/
 	public int nMorphType = (int)Prefs.get( "CurveMorph.nMorphType", 0 );
 	
 	/** range of morphing 0 - image defined, 1 - ROIs defined**/
@@ -47,7 +47,7 @@ public class CMDialog implements DialogListener
 	{
 		gdParams = new GenericDialog( "CurveMorph parameters" );
 		final String [] sAlgorithm = new String[] {"Shape morphing", "XY interpolation"};
-		final String [] sMorphType = new String[] {"Centroid", "Closest end point"};
+		final String [] sMorphType = new String[] {"Centroid", "Closest end point", "First ends", "Last ends"};
 		final String [] sRange = new String[] {"All image span", "Defined by ROIs"};
 		final String [] sKymoType = new String[] {"Maximum", "Average"};
 		final String [] sKymoAlign = new String[] {"Center", "Start point", "End point"};
