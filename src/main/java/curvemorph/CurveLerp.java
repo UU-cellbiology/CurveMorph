@@ -1,0 +1,133 @@
+package curvemorph;
+
+import ij.gui.Roi;
+import ij.process.FloatPolygon;
+
+public class CurveLerp
+{
+	double [][] origXY;
+	double [] origL;
+	
+	int nOrigPoints = 0;
+	
+	double dOrigLength = 0;
+	
+	public CurveLerp(final double [][] initialXY)
+	{
+		nOrigPoints = initialXY[0].length;
+		origXY = new double [2][nOrigPoints];
+		
+		for (int d = 0; d < 2; d++)
+		{
+			for(int i = 0; i < nOrigPoints; i++)
+			{
+				origXY[d][i] = initialXY[d][i];
+			}
+		}
+		setupOrigLength();
+	}
+	
+	public static CurveLerp fromROI(final Roi roi)
+	{
+		final FloatPolygon poly = roi.getFloatPolygon();
+		double [][] xy = new double[2][poly.npoints];
+
+		for(int i = 0; i < poly.npoints; i++)
+		{
+			xy[0][i] = poly.xpoints[i];
+			xy[1][i] = poly.ypoints[i];
+
+		}
+		return new CurveLerp(xy);
+	}
+	public int getPointsN()
+	{
+		return nOrigPoints;
+	}
+	
+	public double [][] getXY()
+	{
+		return origXY;
+	}
+	public double [] getLength()
+	{
+		return origL;
+	}
+	
+	void setupOrigLength()
+	{
+		double dLength = 0.0;
+		
+		origL = new double[nOrigPoints];
+		//origL[0] = 0.0;
+		
+		for(int i = 0; i < nOrigPoints - 1; i++)
+		{
+			dLength += distance( origXY[0][i+1], origXY[0][i], origXY[1][i+1], origXY[1][i]);
+			origL[i+1] = dLength;
+		}
+		dOrigLength = dLength;
+		return;
+	}
+	
+	public double[][] resampleDouble(int nSegments)
+	{
+		double nSegmLenght = dOrigLength/nSegments;
+		double [] dResampleLength = new double [nSegments + 1];
+		double [][] resampledXY = new double[2][nSegments + 1];
+		for (int i = 1; i < nSegments + 1; i++)
+		{
+			dResampleLength[i] = nSegmLenght * i;
+		}
+		for(int d = 0; d < 2; d++)
+		{
+			resampledXY[d] = LinearInterpolation.evalLinearInterp( origL, origXY[d], dResampleLength );
+		}
+		return resampledXY;
+	}
+	
+	public double[][] resampleDouble (int nSegments, int nOrientation)
+	{
+		double [][] resampledXY = resampleDouble(nSegments);
+		if(nOrientation == 0)
+		{
+			return resampledXY;
+		}
+
+		int nLength = resampledXY[0].length;
+		double [][] reverseXY = new double[2][nLength ];
+		for(int i = 0; i < nLength; i++)
+		{
+			for(int d = 0; d < 2; d++)
+			{
+				reverseXY[d][i] = resampledXY[d][nLength - i -1];
+			}
+
+		}
+		return reverseXY;
+
+	}
+	
+	public float[][] resampleFloat(int nSegments)
+	{
+
+		double [][] resampledXY = resampleDouble (nSegments);
+		
+		float [][] fResampledXY = new float[2][nSegments + 1];
+
+		for (int i = 0; i < nSegments + 1; i++)
+		{
+			for(int d = 0; d < 2; d++)
+			{
+				fResampledXY[d][i] = (float)resampledXY[d][i];
+			}
+		}
+		return fResampledXY;
+	}
+	
+	public static double distance (double x1, double x2, double y1, double y2)
+	{
+		return Math.sqrt( Math.pow( x1 - x2, 2 ) + Math.pow( y1 - y2, 2 ) );
+	}
+
+}
